@@ -5,7 +5,7 @@
 #ifndef ASSINGMENT_3_CPUSCHEDULER_H
 #define ASSINGMENT_3_CPUSCHEDULER_H
 
-typedef struct PQNodestruct {
+typedef struct PQueueStruct {
     int priority;
     void *data;
     struct PQueueStruct *next;
