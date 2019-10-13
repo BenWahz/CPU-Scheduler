@@ -23,7 +23,7 @@ Process *createProcess() {
     process4->burstTime = 5;
     process5->pid = 5;
     process5->burstTime = 2;
-    Process array[4];
+    Process array[5];
     array[0] = *process1;
     array[1] = *process2;
     array[2] = *process3;
@@ -78,7 +78,13 @@ void enqueueProcess(PQueueNode **eventPQueue, Process *processes, int numProcess
 }
 
 void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
-
+    if (schedulerType = 0) {
+        FCFS();
+    }
+    else {
+        SJF();
+    }
+    Process *process;
     int numThings;
     Event *event, *newEvent;
     PQueueNode *eventQueue;
