@@ -7,6 +7,29 @@
 #include "CPUscheduler.h"
 
 Process *createProcess() {
+    Process *process1, *process2, *process3, *process4, *process5;
+    process1 = (Process *)malloc(sizeof(Process));
+    process2 = (Process *)malloc(sizeof(Process));
+    process3 = (Process *)malloc(sizeof(Process));
+    process4 = (Process *)malloc(sizeof(Process));
+    process5 = (Process *)malloc(sizeof(Process));
+    process1->pid = 1;
+    process1->burstTime = 6;
+    process2->pid = 2;
+    process2->burstTime = 7;
+    process3->pid = 3;
+    process3->burstTime = 2;
+    process4->pid = 4;
+    process4->burstTime = 5;
+    process5->pid = 5;
+    process5->burstTime = 2;
+    Process array[4];
+    array[0] = *process1;
+    array[1] = *process2;
+    array[2] = *process3;
+    array[3] = *process4;
+    array[4] = *process5;
+    return array;
 
 }
 
@@ -55,7 +78,7 @@ void enqueueProcess(PQueueNode **eventPQueue, Process *processes, int numProcess
 }
 
 void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
-    Process *process;
+
     int numThings;
     Event *event, *newEvent;
     PQueueNode *eventQueue;
@@ -77,6 +100,9 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
 
         }
         else if (event->eventType == PROCESS_STARTS) {
+
+        }
+        else if (event->eventType == PROCESS_TIMESLICE_EXPIRES) {
 
         }
         else if (event->eventType == PROCESS_ENDS) {
