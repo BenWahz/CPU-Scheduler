@@ -34,7 +34,5 @@ typedef struct {
 Process *createProcess();
 void enqueueProcess(PQueueNode **eventPQueue, Process *processes, int numProcesses);
 void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue);
-FCFS();
-SJF();
 
 #endif //ASSINGMENT_3_CPUSCHEDULER_H

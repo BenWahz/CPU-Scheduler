@@ -5,101 +5,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "CPUscheduler.h"
+#include "pqueue.jhibbele.h"
 
 Process *createProcess() {
-    Process *process1, *process2, *process3, *process4, *process5;
-    process1 = (Process *)malloc(sizeof(Process));
-    process2 = (Process *)malloc(sizeof(Process));
-    process3 = (Process *)malloc(sizeof(Process));
-    process4 = (Process *)malloc(sizeof(Process));
-    process5 = (Process *)malloc(sizeof(Process));
-    process1->pid = 1;
-    process1->burstTime = 6;
-    process2->pid = 2;
-    process2->burstTime = 7;
-    process3->pid = 3;
-    process3->burstTime = 2;
-    process4->pid = 4;
-    process4->burstTime = 5;
-    process5->pid = 5;
-    process5->burstTime = 2;
-    Process array[5];
-    array[0] = *process1;
-    array[1] = *process2;
-    array[2] = *process3;
-    array[3] = *process4;
-    array[4] = *process5;
-    return array;
+    Process *processArray = (Process *)malloc(sizeof(Process) * 5);
+    for (int i = 0; i < 5; ++i) {
+        memset(&processArray[i], 0, sizeof(Process));
+    }
 
+    processArray[0].pid = 1;
+    processArray[0].burstTime = 6;
+    processArray[1].pid = 2;
+    processArray[1].burstTime = 7;
+    processArray[2].pid = 3;
+    processArray[2].burstTime = 2;
+    processArray[3].pid = 4;
+    processArray[3].burstTime = 5;
+    processArray[4].pid = 5;
+    processArray[4].burstTime = 2;
+    return processArray;
 }
 
 void enqueueProcess(PQueueNode **eventPQueue, Process *processes, int numProcesses) {
-    PQueueNode *current;
-    current = *eventPQueue;
-    PQueueNode *new_node;
 
-    new_node = (PQueueNode *)malloc(sizeof(PQueueNode));
-    new_node->next=NULL;
-    new_node->priority = processes->burstTime;
-    new_node->data = processes;
+    enqueue(PQueueNode **pqueue, int priority, void *data)
 
-    if(*eventPQueue != NULL) //if list is NOT empty
-    {
-        //PQueueNode *next_node = current->next;
 
-        //if the current process is a higher priority than the Process we are enqueing
-        if((*eventPQueue)->priority > processes->burstTime)
-        {
-            new_node->next = *eventPQueue;
-            *eventPQueue = new_node;
-        }
-        while(current->next != NULL && current->next->priority <=  processes->burstTime)
-        {
-            current = current->next;
-        }
-        if (current->next == NULL && current->priority < processes->burstTime)
-        {
-            current->next = new_node;
-            new_node->next = NULL;
-        }
-        else
-        {
-            new_node->next = current->next;
-            current->next = new_node;
-        }
-    }
-    else
-    {
-        //when this is the first node entered into the queue
-        *eventPQueue = new_node;
-
-    }
-    
 }
 
 void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
-    if (schedulerType = 0) {
-        FCFS();
+    if (schedulerType == 0) {
+
     }
     else {
-        SJF();
+
     }
-    Process *process;
-    int numThings;
-    Event *event, *newEvent;
-    PQueueNode *eventQueue;
-    PQueueNode *thingQueue;
-    int i, startTime;
-    int currentTime, thingMachineIsBusy;
-    int totalWaitTime;
-    int delta, waitTime;
-    double d;
 
 
-    event = (Event *) malloc(sizeof(Event));
-    event->eventType = PROCESS_SUBMITTED;
-    event->process = process;
-    enqueueProcess(&eventQueue, startTime, event);
+
 
     while (event != NULL) {
         if (event->eventType == PROCESS_SUBMITTED) {
@@ -118,5 +61,24 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
 }
 
 int main() {
-    return 0;
+    Process *process;
+    int numThings;
+    Event *event, *newEvent;
+    PQueueNode *eventQueue;
+    PQueueNode *thingQueue;
+    int i, startTime;
+    int currentTime, thingMachineIsBusy;
+    int totalWaitTime;
+    int delta, waitTime;
+    double d;
+    Process *processArray = createProcess();
+
+    // create an event for process
+    for (int i = 0; i < 5; ++i) {
+        event = (Event *) malloc(sizeof(Event));
+        event->eventType = PROCESS_SUBMITTED;
+        event->process = &processArray[i];
+        enqueue(&eventQueue, startTime, event);
+    }
+
 }
