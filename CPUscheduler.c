@@ -26,11 +26,19 @@ Process *createProcess() {
     return processArray;
 }
 
-void enqueueProcess(PQueueNode **eventPQueue, Process *processes, int numProcesses) {
-
-    enqueue(PQueueNode **pqueue, int priority, void *data)
-
-
+void enqueueProcesses(PQueueNode **eventQueue, Process *processes, int numProcesses) {
+    Event *event;
+    int startTimeArray[5] = {0, 3, 4, 6, 6};
+    // create an event for each process and send that to
+    for (int i = 0; i < numProcesses; ++i) {
+        event = (Event *) malloc(sizeof(Event));
+        eventQueue = (PQueueNode *) malloc(sizeof(PQueueNode));
+        event->eventType = PROCESS_SUBMITTED;
+        event->process = &processes[i];
+        //(*eventQueue)->data = event;
+        //(*eventQueue)->priority = startTimeArray[i];
+        enqueue(eventQueue, startTimeArray[i], event);
+    }
 }
 
 void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
@@ -46,6 +54,9 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
 
     while (event != NULL) {
         if (event->eventType == PROCESS_SUBMITTED) {
+            if (thingMachineIsBusy == 0) {
+
+            }
 
         }
         else if (event->eventType == PROCESS_STARTS) {
@@ -62,23 +73,27 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
 
 int main() {
     Process *process;
-    int numThings;
-    Event *event, *newEvent;
+    int numProcesses = 5;
+
     PQueueNode *eventQueue;
-    PQueueNode *thingQueue;
-    int i, startTime;
+    PQueueNode *processQueue;
+    //int i, startTime;
     int currentTime, thingMachineIsBusy;
     int totalWaitTime;
     int delta, waitTime;
     double d;
+    eventQueue = NULL;
     Process *processArray = createProcess();
+    enqueueProcesses(&eventQueue, processArray, numProcesses);
+    runSimulation();
+    // start times for processes
 
-    // create an event for process
-    for (int i = 0; i < 5; ++i) {
-        event = (Event *) malloc(sizeof(Event));
-        event->eventType = PROCESS_SUBMITTED;
-        event->process = &processArray[i];
-        enqueue(&eventQueue, startTime, event);
-    }
 
+    // create PQueueNode for each process
+   // for (int i = 0; i < 5; ++i) {
+   //     processQueue =(PQueueNode *) malloc(sizeof(PQueueNode));
+   //     processQueue->data = &processArray[i];
+   //     processQueue->priority = startTimeArray[i];
+   //     enqueueProcess(&eventQueue, &processQueue, numProcesses);
+   // }
 }
