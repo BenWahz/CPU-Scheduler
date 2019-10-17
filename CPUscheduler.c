@@ -49,27 +49,27 @@ void enqueueProcesses(PQueueNode **eventQueue, Process *processes, int numProces
 }
 
 void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
-    if (schedulerType == 0) {
+   // if (schedulerType == 0) {
 
-    }
-    else {
+  //  }
+   // else {
 
-    }
+   // }
     int i, startTime;
     int numProcesses = 5;
     Process *process;
-    int currentTime, thingMachineIsBusy;
+    int currentTime, thingMachineIsBusy = 0;
     int totalWaitTime = 0;
     int delta, waitTime;
     double d;
-    PQueueNode *processQueue;
+    PQueueNode *processQueue = NULL;
     Event *event, *newEvent;
     currentTime = getMinPriority(eventPQueue);
     event = dequeue(&eventPQueue);
     while (event != NULL) {
         process = event->process;
         if (event->eventType == PROCESS_SUBMITTED) {
-            process->startWait = currentTime;
+            process->waitTime = currentTime;
             if (thingMachineIsBusy == 0) {
                 // create an event at currentTime to start this process
                 newEvent = (Event *) malloc(sizeof(Event));
@@ -79,46 +79,46 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
                 thingMachineIsBusy = 1;
             } else {
                 // can't start: put this process in the process queue
-                printf("t = %d: %s wants to start but must go into the thingQueue\n", currentTime, process->name);
-                enqueue(&eventQueue, 0, process);
+                printf("t = %d: %d wants to start but must go into the processQueue\n", currentTime, process->pid);
+                enqueue(&eventPQueue, 0, process);
             }
         } else if (event->eventType == PROCESS_STARTS) {
 //      printf("t = %d: %s starts\n", currentTime, process->name);
-            waitTime = currentTime - process->startWait;
-            printf("t = %d: %s starts; wait time = %d\n",
-                   currentTime, process->name, waitTime);
+            waitTime = currentTime - process->waitTime;
+         //   printf("t = %d: %d starts; wait time = %d\n",
+       //            currentTime, process->pid, waitTime);
             totalWaitTime += waitTime;
             // create an event in the future for the termination of this process
             newEvent = (Event *) malloc(sizeof(Event));
             newEvent->eventType = PROCESS_ENDS;
             newEvent->process = process;
-            enqueue(&eventQueue, currentTime + process->duration, newEvent);
+            enqueue(&eventPQueue, currentTime + process->lastTime, newEvent);
         } else if (event->eventType == PROCESS_ENDS) {
             process = event->process;
-            printf("t = %d: %s ends\n", currentTime, process->name);
+            printf("t = %d: %d ends\n", currentTime, process->pid);
             // see if there is a process in the thingQueue
             if (queueLength(processQueue) > 0) {
                 process = dequeue(&processQueue);
-//      printf("t = %d: %s starts; wait time = %d\n",
-//             currentTime, process->name, waitTime);
+      printf("t = %d: %d starts; wait time = %d\n",
+             currentTime, process->pid, waitTime);
                 // create an event in the future for the termination of this process
                 newEvent = (Event *) malloc(sizeof(Event));
                 newEvent->eventType = PROCESS_STARTS;
                 newEvent->process = process;
-                enqueue(&eventQueue, currentTime, newEvent);
+                enqueue(&eventPQueue, currentTime, newEvent);
             } else {
                 // current process finished, so process machine is not busy
                 thingMachineIsBusy = 0;
             }
         }
 
-        currentTime = getMinPriority(eventQueue);
-        if (currentTime >= 0)
-            printf("currentTime = %d\n", currentTime);
-        printQueue(eventQueue, printEvent);
-        printf("\n");
+        currentTime = getMinPriority(eventPQueue);
+       // if (currentTime >= 0)
+           // printf("currentTime = %d\n", currentTime);
+      //  printQueue(eventPQueue, printEvent);
+      //  printf("\n");
 
-        event = dequeue(&eventQueue);
+        event = dequeue(&eventPQueue);
     }
 
     printf("\n");
@@ -132,10 +132,10 @@ int main() {
     int numProcesses = 5;
     int FCFS_TYPE = 0;
     int SJF_TYPE = 1;
-    PQueueNode *eventQueue;
+    PQueueNode *eventQueue = NULL;
+    //eventQueue = NULL;
 
 
-    eventQueue = NULL;
     Process *processArray = createProcess();
     enqueueProcesses(&eventQueue, processArray, numProcesses);
     // Rum FCFS simulation
