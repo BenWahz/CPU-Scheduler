@@ -1,6 +1,8 @@
-//
-// Created by jacel on 10/13/2019.
-//
+// Jace Laquerre & Henry Rice
+// CS 201
+// Assignment 4 - DES: Simulation of CPU Scheduler
+// pqueue.jhibble.h and runSimulation base code taken from
+// class GitLab with instructor permission
 
 #include <stdio.h>
 #include <stdlib.h>
