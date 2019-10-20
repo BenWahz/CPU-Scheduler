@@ -70,7 +70,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
         process = event->process;
         if (event->eventType == PROCESS_SUBMITTED) {
             process->waitTime = currentTime;
-            if (processMachineIsBusy == 0) {
+            if (processMachineIsBusy == 0) { //CPU queue is empty / not busy
                 printf("first process submitted");
                 // create an event at currentTime to start this process
                 newEvent = (Event *) malloc(sizeof(Event));
@@ -81,13 +81,12 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
             } else {
                 // can't start: put this process in the process queue
                 printf("t = %d: %d wants to start but must go into the processQueue\n", currentTime, process->pid);
-                enqueue(&eventPQueue, 0, process); ///should enqueue process to cpu queue
+                enqueue(&processQueue, 0, process); ///should enqueue process to cpu queue
             }
         } else if (event->eventType == PROCESS_STARTS) {
-//      printf("t = %d: %s starts\n", currentTime, process->name);
+            printf("t = %d: %s starts\n", currentTime, process->pid);
             waitTime = currentTime - process->waitTime;
-         //   printf("t = %d: %d starts; wait time = %d\n",
-       //            currentTime, process->pid, waitTime);
+            printf("t = %d: %d starts; wait time = %d\n", currentTime, process->pid, waitTime);
             totalWaitTime += waitTime;
             // create an event in the future for the termination of this process
             newEvent = (Event *) malloc(sizeof(Event));
