@@ -9,11 +9,8 @@
 #include "CPUscheduler.h"
 #include "pqueue.jhibbele.h"
 
-Process *createProcess() {
+Process *createProcess(void) {
     Process *processArray = (Process *)malloc(sizeof(Process) * 5);
-    for (int i = 0; i < 5; ++i) {
-        memset(&processArray[i], 0, sizeof(Process));
-    }
     int burstTimeQueue[5] = {6, 7, 2, 5, 2};
     for (int i = 0; i < 5; ++i) {
         processArray[i].pid = (i + 1);
@@ -28,26 +25,18 @@ void enqueueProcesses(PQueueNode **eventQueue, Process *processes, int numProces
     // create an event for each process and send that to
     for (int i = 0; i < numProcesses; ++i) {
         event = (Event *) malloc(sizeof(Event));
-        //*eventQueue = (PQueueNode *) malloc(sizeof(PQueueNode)); // possibily not a pointer in front here
         event->eventType = PROCESS_SUBMITTED;
         event->process = &processes[i];
-        //(*eventQueue)->data = event;
-        //(*eventQueue)->priority = startTimeArray[i];
         enqueue(&*eventQueue, startTimeArray[i], event);
     }
 }
 
 void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
-   // if (schedulerType == 0) {
 
-   //  }
-   // else {
-
-   // }
     int i, startTime;
     int numProcesses = 5;
     Process *process;
-    int currentTime, processMachineIsBusy = 0;
+    int currentTime = 0, processMachineIsBusy = 0;
     int totalWaitTime = 0;
     int delta, waitTime;
     double d;
@@ -60,7 +49,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
         if (event->eventType == PROCESS_SUBMITTED) {
             process->waitTime = currentTime;
             if (processMachineIsBusy == 0) { //CPU queue is empty / not busy
-                printf("First process submitted." );
+                printf("\nFirst process submitted.");
                 // create an event at currentTime to start this process
                 newEvent = (Event *) malloc(sizeof(Event));
                 newEvent->eventType = PROCESS_STARTS;
@@ -69,30 +58,37 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
                 processMachineIsBusy = 1;
             }
             else {
-                // can't start: put this process in the process queue
-                printf("t = %d: %d wants to start but must go into the processQueue\n", currentTime, process->pid);
-                enqueue(&processQueue, 0, process); ///should enqueue process to cpu queue
+                // FCFS
+                if (schedulerType == 1) {
+                    //can't start: put this process in the process queue
+                    printf("t = %d: Process id=%d PROCESS_SUBMITTED but must go into the processQueue", currentTime, process->pid);
+                    enqueue(&processQueue, 0, process);
+                }
+                // SJF
+                else if (schedulerType == 2) {
+                    printf("t = %d: Process id=%d PROCESS_SUBMITTED but must go into the processQueue", currentTime, process->pid);
+                    enqueue(&processQueue, process->burstTime, process);
+                 }
+
             }
         }
         else if (event->eventType == PROCESS_STARTS) {
-            printf("t = %d: %d starts\n", currentTime, process->pid);
+            printf("t = %d: Process id=%d PROCESS_STARTS\n", currentTime, process->pid);
             waitTime = currentTime - process->waitTime;
-            printf("t = %d: %d starts; wait time = %d\n", currentTime, process->pid, waitTime);
+            printf("t = %d: Process id=%d PROCESS_STARTS; wait time = %d", currentTime, process->pid, waitTime);
             totalWaitTime += waitTime;
             // create an event in the future for the termination of this process
             newEvent = (Event *) malloc(sizeof(Event));
             newEvent->eventType = PROCESS_ENDS;
             newEvent->process = process;
-            enqueue(&eventPQueue, currentTime + process->lastTime, newEvent);
+            enqueue(&eventPQueue, currentTime + process->burstTime, newEvent);
         }
         else if (event->eventType == PROCESS_ENDS) {
             process = event->process;
-            printf("t = %d: %d ends\n", currentTime, process->pid);
+            printf("t = %d: Process id=%d PROCESS_ENDS\n", currentTime, process->pid);
             // see if there is a process in the thingQueue
             if (queueLength(processQueue) > 0) {
                 process = dequeue(&processQueue);
-                printf("t = %d: %d starts; wait time = %d\n",
-                     currentTime, process->pid, waitTime);
                 // create an event in the future for the termination of this process
                 newEvent = (Event *) malloc(sizeof(Event));
                 newEvent->eventType = PROCESS_STARTS;
@@ -106,10 +102,10 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
         }
 
         currentTime = getMinPriority(eventPQueue);
-       // if (currentTime >= 0)
-           // printf("currentTime = %d\n", currentTime);
-      //  printQueue(eventPQueue, printEvent);
-      //  printf("\n");
+        //if (currentTime >= 0)
+          //  printf("currentTime = %d\n", currentTime);
+        //printQueue(eventPQueue, printEvent);
+        printf("\n");
 
         event = dequeue(&eventPQueue);
     }
@@ -123,17 +119,21 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
 int main() {
 
     int numProcesses = 5;
-    int FCFS_TYPE = 0;
-    int SJF_TYPE = 1;
+    int FCFS_TYPE = 1;
+    int SJF_TYPE = 2;
+    int RR_TYPE = 3;
     PQueueNode *eventQueue = NULL;
-    //eventQueue = NULL;
+    eventQueue = NULL;
 
 
     Process *processArray = createProcess();
     enqueueProcesses(&eventQueue, processArray, numProcesses);
     // Rum FCFS simulation
+    printf("--------FCFS----------");
     runSimulation(FCFS_TYPE, 0, eventQueue);
+
     //run SJF simulation
+    printf("--------SJF----------");
     runSimulation(SJF_TYPE,0, eventQueue);
 
 }

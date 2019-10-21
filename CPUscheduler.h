@@ -31,7 +31,7 @@ typedef struct {
     Process *process ;
 } Event;
 
-Process *createProcess();
+Process *createProcess(void);
 void enqueueProcesses(PQueueNode **eventPQueue, Process *processes, int numProcesses);
 void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue);
 
