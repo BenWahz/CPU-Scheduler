@@ -27,7 +27,7 @@ void enqueueProcesses(PQueueNode **eventQueue, Process *processes, int numProces
         event = (Event *) malloc(sizeof(Event));
         event->eventType = PROCESS_SUBMITTED;
         event->process = &processes[i];
-        enqueue(&*eventQueue, startTimeArray[i], event);
+        enqueue(eventQueue, startTimeArray[i], event);
     }
 }
 
@@ -50,6 +50,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
             process->waitTime = currentTime;
             if (processMachineIsBusy == 0) { //CPU queue is empty / not busy
                 printf("\nFirst process submitted.");
+                printf("Process id= %d", process->pid);
                 // create an event at currentTime to start this process
                 newEvent = (Event *) malloc(sizeof(Event));
                 newEvent->eventType = PROCESS_STARTS;
@@ -68,8 +69,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
                 else if (schedulerType == 2) {
                     printf("t = %d: Process id=%d PROCESS_SUBMITTED but must go into the processQueue", currentTime, process->pid);
                     enqueue(&processQueue, process->burstTime, process);
-                 }
-
+                }
             }
         }
         else if (event->eventType == PROCESS_STARTS) {
@@ -100,11 +100,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
                 processMachineIsBusy = 0;
             }
         }
-
         currentTime = getMinPriority(eventPQueue);
-        //if (currentTime >= 0)
-          //  printf("currentTime = %d\n", currentTime);
-        //printQueue(eventPQueue, printEvent);
         printf("\n");
 
         event = dequeue(&eventPQueue);
@@ -117,14 +113,12 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
 }
 
 int main() {
-
     int numProcesses = 5;
     int FCFS_TYPE = 1;
     int SJF_TYPE = 2;
     int RR_TYPE = 3;
     PQueueNode *eventQueue = NULL;
     eventQueue = NULL;
-
 
     Process *processArray = createProcess();
     enqueueProcesses(&eventQueue, processArray, numProcesses);
@@ -133,7 +127,7 @@ int main() {
     runSimulation(FCFS_TYPE, 0, eventQueue);
 
     //run SJF simulation
-    printf("--------SJF----------");
+    printf("\n--------SJF----------");
     runSimulation(SJF_TYPE,0, eventQueue);
 
 }
