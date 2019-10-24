@@ -20,7 +20,7 @@ int queueLength(PQueueNode *pqueue);
 
 void printStudentRecord(void *data);
 
-int enqueue(PQueueNode **pqueue, int priority, void *data) {
+int enqueue(PQueueNode **pqueue, int priority,void *data) {
     PQueueNode *newNode, *currNode, *prevNode;
     newNode = (PQueueNode *) malloc(sizeof(PQueueNode));
     newNode->next = NULL;
