@@ -77,12 +77,12 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
 
             //printf("t = %d: Process id=%d PROCESS_STARTS\n", currentTime, process->pid);
             waitTime = currentTime - process->waitTime;
-            printf("t = %d: Process id=%d PROCESS_STARTS; wait time = %d", currentTime, process->pid, waitTime);
+            printf("t = %d: Process id=%d PROCESS_STARTS; wait time = %d \n", currentTime, process->pid, waitTime);
             totalWaitTime += waitTime;
             // create an event in the future for the termination of this process
-            if(schedulerType == 3 && quantum < process->burstTime)
+            if(schedulerType == 3 && quantum <= process->burstTime)
             {
-                printf("t = %d: Process id=%d PROCESS_TIME_SLICE_EXPIRES\n", currentTime, process->pid);
+
                 newEvent = (Event *) malloc(sizeof(Event));
                 newEvent->eventType =PROCESS_TIMESLICE_EXPIRES;
                 newEvent->process = process;
@@ -97,7 +97,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
         }
         else if (event->eventType == PROCESS_ENDS) {
             process = event->process;
-            printf("t = %d: Process id=%d PROCESS_ENDS\n", currentTime, process->pid);
+            printf("t = %d: Process id=%d PROCESS_ENDS, wait time = %d", currentTime, process->pid,waitTime);
             // see if there is a process in the thingQueue
             if (queueLength(processQueue) > 0) {
                     process = dequeue(&processQueue);
@@ -112,6 +112,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
                 processMachineIsBusy = 0;
             }
         } else if (event -> eventType == PROCESS_TIMESLICE_EXPIRES){
+            printf("\nt = %d: Process id=%d PROCESS_TIME_SLICE_EXPIRES\n", currentTime, process->pid);
             if (queueLength(processQueue) > 0) {
                 //enqueue process to back of CPUqueue
                 process = event->process;
