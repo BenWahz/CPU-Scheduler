@@ -39,7 +39,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
     Process *process;
     int currentTime = 0, processMachineIsBusy = 0;
     int totalWaitTime = 0;
-    int delta, waitTime;
+    int delta, waitTime = 0;
     double d;
     PQueueNode *processQueue = NULL;
     Event *event, *newEvent;
