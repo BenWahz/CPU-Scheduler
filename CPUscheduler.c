@@ -50,8 +50,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
         if (event->eventType == PROCESS_SUBMITTED){
             process->waitTime = currentTime;
             if (processMachineIsBusy == 0) { //CPU queue is empty / not busy
-                printf("\nFirst process submitted.");
-                printf("Process id= %d", process->pid);
+                printf("\nt = 0, Process id=%d PROCESS_SUBMITTED. ", process->pid);
                 // create an event at currentTime to start this process
                 newEvent = (Event *) malloc(sizeof(Event));
                 newEvent->eventType = PROCESS_STARTS;
@@ -80,14 +79,13 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
             printf("t = %d: Process id=%d PROCESS_STARTS; wait time = %d \n", currentTime, process->pid, waitTime);
             totalWaitTime += waitTime;
             // create an event in the future for the termination of this process
-            if(schedulerType == 3 && quantum <= process->burstTime)
-            {
-
+            if(schedulerType == 3 && quantum < (process->burstTime)) {
                 newEvent = (Event *) malloc(sizeof(Event));
                 newEvent->eventType =PROCESS_TIMESLICE_EXPIRES;
                 newEvent->process = process;
-                enqueue(&eventPQueue, currentTime+quantum, newEvent);
-            } else {
+                enqueue(&eventPQueue, currentTime + quantum, newEvent);
+            }
+            else {
                 newEvent = (Event *) malloc(sizeof(Event));
                 newEvent->eventType = PROCESS_ENDS;
                 newEvent->process = process;
@@ -97,7 +95,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
         }
         else if (event->eventType == PROCESS_ENDS) {
             process = event->process;
-            printf("t = %d: Process id=%d PROCESS_ENDS, wait time = %d", currentTime, process->pid,waitTime);
+            printf("t = %d: Process id=%d PROCESS_ENDS, wait time = %d", currentTime, process->pid, waitTime);
             // see if there is a process in the thingQueue
             if (queueLength(processQueue) > 0) {
                     process = dequeue(&processQueue);
@@ -111,19 +109,20 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
                 // current process finished, so process machine is not busy
                 processMachineIsBusy = 0;
             }
-        } else if (event -> eventType == PROCESS_TIMESLICE_EXPIRES){
+        }
+        else if (event -> eventType == PROCESS_TIMESLICE_EXPIRES) {
             printf("\nt = %d: Process id=%d PROCESS_TIME_SLICE_EXPIRES\n", currentTime, process->pid);
             if (queueLength(processQueue) > 0) {
                 //enqueue process to back of CPUqueue
                 process = event->process;
-                process->burstTime = ((process->burstTime)-quantum);
+                process->burstTime = ((process->burstTime) - quantum);
                 enqueue(&processQueue, 0, process);
                 // create an event in the future for the restart of this process
                 newEvent = (Event *) malloc(sizeof(Event));
                 newEvent->eventType = PROCESS_STARTS;
                 newEvent->process = process;
                 enqueue(&eventPQueue, currentTime, newEvent);
-
+                //processMachineIsBusy = 0; /////////////////
             }
         }
         currentTime = getMinPriority(eventPQueue);
