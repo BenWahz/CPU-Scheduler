@@ -32,7 +32,9 @@ typedef struct {
 } Event;
 
 Process *createProcess(void);
+int genExpRand(double mean);
 void enqueueProcesses(PQueueNode **eventPQueue, Process *processes, int numProcesses);
 void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue);
-
+Process *createRandomProcesses(int numProcesses, double meanBurstTime);
+void enqueueRandomProcesses(int numProcesses, PQueueNode **eventQueue, Process *processes, double meanIAT);
 #endif //ASSINGMENT_3_CPUSCHEDULER_H
