@@ -48,7 +48,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
         if (event->eventType == PROCESS_SUBMITTED){
             process->waitTime = currentTime;
             if (processMachineIsBusy == 0) { //CPU queue is empty / not busy
-                printf("\nt = 0, Process id=%d PROCESS_SUBMITTED. ", process->pid);
+                printf("\nt = %d, Process id=%d PROCESS_SUBMITTED. ", currentTime, process->pid);
                 // create an event at currentTime to start this process
                 newEvent = (Event *) malloc(sizeof(Event));
                 newEvent->eventType = PROCESS_STARTS;
@@ -125,12 +125,10 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
                 newEvent->eventType = PROCESS_STARTS;
                 newEvent->process = process;
                 enqueue(&eventPQueue, currentTime, newEvent);
-                //processMachineIsBusy = 0; /////////////////
             }
         }
         currentTime = getMinPriority(eventPQueue);
         printf("\n");
-        //printQueue(eventPQueue, (void (*)(void *)) printEvent);
         event = dequeue(&eventPQueue);
     }
 
@@ -184,7 +182,7 @@ int main() {
     eventQueue = NULL;
     double meanBurstTime = 25.0;
     double meanIAT = 25.0;
-    long seed = 1;
+    long seed = 2;
 
     srand48(seed);
     Process *processArray = createProcess();
