@@ -166,7 +166,6 @@ void enqueueRandomProcesses(int numProcesses, PQueueNode **eventQueue, Process *
 
 int genExpRand (double mean) {
     double r, t;
-
     int rtnval;
     r = drand48();
     t = -log(1 - r) * mean;
@@ -190,9 +189,9 @@ int main() {
     double meanIAT = 25.0;
     int seed = 1;
 
-    int *seed48(int);
-    seed48(seed);
-    //srand48(seed);
+    //int *seed48(int);
+    unsigned short *seed48(unsigned short seed);
+    srand48(seed48(seed));
     Process *processArray = createProcess();
     enqueueProcesses(&eventQueue, processArray, numProcesses);
     // Run FCFS simulation
@@ -207,11 +206,11 @@ int main() {
     runSimulation(RR_TYPE,4, eventQueue);
     //eventQueue = NULL;
     // Run experiments
-    //Process *randomProcessArray = createRandomProcesses(numProcesses, meanBurstTime);
-    //enqueueRandomProcesses(numProcesses, &eventQueue, randomProcessArray, meanIAT);
+    Process *randomProcessArray = createRandomProcesses(numProcesses, meanBurstTime);
+    enqueueRandomProcesses(numProcesses, &eventQueue, randomProcessArray, meanIAT);
 
-    // Experiments
-    //runSimulation(SJF_TYPE,0, eventQueue);
+    // Experimentsquit
+    runSimulation(SJF_TYPE,0, eventQueue);
 
 }
 
