@@ -136,11 +136,6 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
     printf("\n");
     printf("%d processes; mean wait time = %.2f\n", numProcesses, mean);
 
-    double var = pow(((double)totalWaitTime - mean), 2);
-    double std  = sqrt((var/numProcesses));
-
-    printf("%d processes; standard deviation = %.2f\n", numProcesses, std);
-
 }
 
 int genExpRand (double mean) {
@@ -187,7 +182,7 @@ int main() {
     eventQueue = NULL;
     double meanBurstTime = 25.0;
     double meanIAT = 25.0;
-    long seed = 2;
+    long seed = 1;
 
     srand48(seed);
     Process *processArray = createProcess();
@@ -209,12 +204,13 @@ int main() {
     // Run experiments
     Process *randomProcessArray = createRandomProcesses(numProcesses, meanBurstTime);
     enqueueRandomProcesses(numProcesses, &eventQueue, randomProcessArray, meanIAT);
-
     // Experiments
     printf("\n-------EXPERIMENTS------");
+    printf("\n------SJF------");
     runSimulation(SJF_TYPE,0, eventQueue);
     eventQueue = NULL;
     // Run experiments
+    printf("\n------FCFS-----");
     enqueueRandomProcesses(numProcesses, &eventQueue, randomProcessArray, meanIAT);
     runSimulation(FCFS_TYPE,0, eventQueue);
 }
