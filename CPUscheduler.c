@@ -71,10 +71,8 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
             }
         }
         else if (event->eventType == PROCESS_STARTS) {
-
             printf("t = %d: Process id=%d PROCESS_STARTS\n", currentTime, process->pid);
             waitTime = currentTime - process->waitTime;
-            //printf("t = %d: Process id=%d PROCESS_STARTS; wait time = %d \n", currentTime, process->pid, waitTime);
             totalWaitTime += waitTime;
             // create an event in the future for the termination of this process
             if(schedulerType == 3 && quantum < (process->burstTime)) {
@@ -89,11 +87,17 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
                 newEvent->process = process;
                 enqueue(&eventPQueue, currentTime + process->burstTime, newEvent);
             }
-
         }
         else if (event->eventType == PROCESS_ENDS) {
             process = event->process;
-            printf("t = %d: Process id=%d PROCESS_ENDS, wait time = %d", currentTime, process->pid, currentTime - process->burstTime );
+            if (schedulerType == 3) {
+                printf("t = %d: Process id=%d PROCESS_ENDS, wait time = %d", currentTime,
+                       process->pid, currentTime);
+            }
+            else {
+                printf("t = %d: Process id=%d PROCESS_ENDS, wait time = %d", currentTime,
+                       process->pid, waitTime);
+            }
             // see if there is a process in the thingQueue
             if (queueLength(processQueue) > 0) {
                     process = dequeue(&processQueue);
@@ -160,26 +164,9 @@ void enqueueRandomProcesses(int numProcesses, PQueueNode **eventQueue, Process *
     }
 }
 
-#define PRECISION 2.82e14
-
-double drand48(void) {
-    double x = 0;
-    double denom = RAND_MAX + 1;
-    double need;
-
-    for(need = PRECISION; need 1; need /= (RAND_MAX + 1.)) {
-        x += rand()/denom;
-        denom *= RAND_MAX + 1. ;
-    }
-
-    return x;
-
-}
-
 int genExpRand (double mean) {
     double r, t;
-    //int *seed48(int);
-    //seed48(1);
+
     int rtnval;
     r = drand48();
     t = -log(1 - r) * mean;
@@ -201,23 +188,27 @@ int main() {
     eventQueue = NULL;
     double meanBurstTime = 25.0;
     double meanIAT = 25.0;
+    int seed = 1;
 
+    int *seed48(int);
+    seed48(seed);
+    //srand48(seed);
     Process *processArray = createProcess();
     enqueueProcesses(&eventQueue, processArray, numProcesses);
     // Run FCFS simulation
-    runSimulation(FCFS_TYPE, 0, eventQueue);
-    eventQueue = NULL;
-    enqueueProcesses(&eventQueue, processArray, numProcesses);
+    //runSimulation(FCFS_TYPE, 0, eventQueue);
+    //eventQueue = NULL;
+    //enqueueProcesses(&eventQueue, processArray, numProcesses);
     // Run SJF simulation
-    runSimulation(SJF_TYPE,0, eventQueue);
-    eventQueue = NULL;
-    enqueueProcesses(&eventQueue, processArray, numProcesses);
+    //runSimulation(SJF_TYPE,0, eventQueue);
+    //eventQueue = NULL;
+    //enqueueProcesses(&eventQueue, processArray, numProcesses);
     // Run RR simulation
     runSimulation(RR_TYPE,4, eventQueue);
-    eventQueue = NULL;
+    //eventQueue = NULL;
     // Run experiments
-    Process *randomProcessArray = createRandomProcesses(numProcesses, meanBurstTime);
-    enqueueRandomProcesses(numProcesses, &eventQueue, randomProcessArray, meanIAT);
+    //Process *randomProcessArray = createRandomProcesses(numProcesses, meanBurstTime);
+    //enqueueRandomProcesses(numProcesses, &eventQueue, randomProcessArray, meanIAT);
 
     // Experiments
     //runSimulation(SJF_TYPE,0, eventQueue);
