@@ -57,7 +57,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
                 processMachineIsBusy = 1;
             }
             else {
-                // FCFS
+                // FCFS & RR
                 if (schedulerType == 1 || schedulerType == 3) {
                     //can't start: put this process in the process queue
                     printf("t = %d: Process id=%d PROCESS_SUBMITTED but must go into the processQueue", currentTime, process->pid);
@@ -71,7 +71,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
             }
         }
         else if (event->eventType == PROCESS_STARTS) {
-            printf("t = %d: Process id=%d PROCESS_STARTS\n", currentTime, process->pid);
+            printf("t = %d: Process id=%d PROCESS_STARTS\n", currentTime, process->pid); // SEGFAULT
             waitTime = currentTime - process->waitTime;
             totalWaitTime += waitTime;
             // create an event in the future for the termination of this process
@@ -92,7 +92,7 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
             process = event->process;
             if (schedulerType == 3) {
                 printf("t = %d: Process id=%d PROCESS_ENDS, wait time = %d", currentTime,
-                       process->pid, currentTime);
+                       process->pid, event->process->waitTime);
             }
             else {
                 printf("t = %d: Process id=%d PROCESS_ENDS, wait time = %d", currentTime,
@@ -114,7 +114,6 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
         }
         else if (event -> eventType == PROCESS_TIMESLICE_EXPIRES) {
             printf("\nt = %d: Process id=%d PROCESS_TIME_SLICE_EXPIRES\n", currentTime, process->pid);
-
             //enqueue process to back of CPUqueue
             process = event->process;
             process->burstTime = ((process->burstTime) - quantum);
@@ -141,6 +140,18 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
 
 }
 
+int genExpRand (double mean) {
+    double r, t;
+    int rtnval;
+    r = drand48();
+    t = -log(1 - r) * mean;
+    rtnval = (int) floor(t);
+    if (rtnval == 0) {
+        rtnval = 1;
+    }
+    return(rtnval);
+}
+
 Process *createRandomProcesses(int numProcesses, double meanBurstTime) {
     Process *processArray = (Process *)malloc(sizeof(Process) * numProcesses);
     for (int i = 0; i < numProcesses; ++i) {
@@ -164,20 +175,6 @@ void enqueueRandomProcesses(int numProcesses, PQueueNode **eventQueue, Process *
     }
 }
 
-int genExpRand (double mean) {
-    double r, t;
-    int rtnval;
-    r = drand48();
-    t = -log(1 - r) * mean;
-    rtnval = (int) floor(t);
-    if (rtnval == 0) {
-        rtnval = 1;
-    }
-    return(rtnval);
-}
-
-
-
 int main() {
     int numProcesses = 5;
     int FCFS_TYPE = 1;
@@ -187,31 +184,30 @@ int main() {
     eventQueue = NULL;
     double meanBurstTime = 25.0;
     double meanIAT = 25.0;
-    int seed = 1;
+    long seed = 1;
 
-    //int *seed48(int);
-    unsigned short *seed48(unsigned short seed);
-    srand48(seed48(seed));
+    srand48(seed);
     Process *processArray = createProcess();
     enqueueProcesses(&eventQueue, processArray, numProcesses);
     // Run FCFS simulation
-    //runSimulation(FCFS_TYPE, 0, eventQueue);
-    //eventQueue = NULL;
-    //enqueueProcesses(&eventQueue, processArray, numProcesses);
+    printf("\n------FCFS-----");
+    runSimulation(FCFS_TYPE, 0, eventQueue);
+    eventQueue = NULL;
+    enqueueProcesses(&eventQueue, processArray, numProcesses);
     // Run SJF simulation
-    //runSimulation(SJF_TYPE,0, eventQueue);
-    //eventQueue = NULL;
-    //enqueueProcesses(&eventQueue, processArray, numProcesses);
+    printf("\n------SJF------");
+    runSimulation(SJF_TYPE,0, eventQueue);
+    eventQueue = NULL;
+    enqueueProcesses(&eventQueue, processArray, numProcesses);
     // Run RR simulation
+    printf("\n-------RR------");
     runSimulation(RR_TYPE,4, eventQueue);
-    //eventQueue = NULL;
+    eventQueue = NULL;
     // Run experiments
     Process *randomProcessArray = createRandomProcesses(numProcesses, meanBurstTime);
     enqueueRandomProcesses(numProcesses, &eventQueue, randomProcessArray, meanIAT);
 
-    // Experimentsquit
+    // Experiments
+    printf("\n-------EXPERIMENTS------");
     runSimulation(SJF_TYPE,0, eventQueue);
-
 }
-
-
