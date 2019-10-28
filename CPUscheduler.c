@@ -160,6 +160,22 @@ void enqueueRandomProcesses(int numProcesses, PQueueNode **eventQueue, Process *
     }
 }
 
+#define PRECISION 2.82e14
+
+double drand48(void) {
+    double x = 0;
+    double denom = RAND_MAX + 1;
+    double need;
+
+    for(need = PRECISION; need 1; need /= (RAND_MAX + 1.)) {
+        x += rand()/denom;
+        denom *= RAND_MAX + 1. ;
+    }
+
+    return x;
+
+}
+
 int genExpRand (double mean) {
     double r, t;
     //int *seed48(int);
@@ -173,6 +189,7 @@ int genExpRand (double mean) {
     }
     return(rtnval);
 }
+
 
 
 int main() {
