@@ -132,9 +132,14 @@ void runSimulation(int schedulerType, int quantum, PQueueNode *eventPQueue) {
         event = dequeue(&eventPQueue);
     }
 
+    double mean = (double)totalWaitTime / numProcesses;
     printf("\n");
-    printf("%d things; mean wait time = %.2f\n", numProcesses,
-           (double) totalWaitTime / numProcesses);
+    printf("%d processes; mean wait time = %.2f\n", numProcesses, mean);
+
+    double var = pow(((double)totalWaitTime - mean), 2);
+    double std  = sqrt((var/numProcesses));
+
+    printf("%d processes; standard deviation = %.2f\n", numProcesses, std);
 
 }
 
@@ -208,4 +213,8 @@ int main() {
     // Experiments
     printf("\n-------EXPERIMENTS------");
     runSimulation(SJF_TYPE,0, eventQueue);
+    eventQueue = NULL;
+    // Run experiments
+    enqueueRandomProcesses(numProcesses, &eventQueue, randomProcessArray, meanIAT);
+    runSimulation(FCFS_TYPE,0, eventQueue);
 }
